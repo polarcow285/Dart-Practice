@@ -3,18 +3,30 @@ void main() {
   String sentence2 = "I have 5 pears"; 
   String sentence3 = "We have 7 apples";   
   String sentence4 = "5 pears are in my car";
-  String sentence5 = "He has 678 grapes";
-  String sentence6 = "She bought 2 pears yesterday";
+  String sentence5 = "70 apples were stolen yesterday";
+  String sentence6 = "The dog bought 84 pineapples";
 
-  //print out the # of total fruit  
+  //print out the # of total fruit 
   
  
   //countFruitSimple(sentence1, sentence2);
   //countFruitSmart(sentence3, sentence4);
   //countFruitExtraSmart(sentence5, sentence6);
   //countFruitSuperSmart(sentence5, sentence6);
-  fruitHelper(sentence5);
+  List<String> myList = new List();
+  myList.add(sentence1);
+  myList.add(sentence2);
+  myList.add(sentence3);
+  myList.add(sentence4);
+  myList.add(sentence5);
+  myList.add(sentence6);
+  
+  countFruitLists(myList);
+  
 }
+
+
+
 
 bool isNumeric(String s) {
  if (s == null) {
@@ -25,7 +37,7 @@ bool isNumeric(String s) {
 
 
 
-void fruitHelper(String str5){
+List<String> fruitHelper(String str5){
   bool lastCharacterWasNumber = false; 
   var i = 0;
   String firstNumber = "";
@@ -53,72 +65,41 @@ void fruitHelper(String str5){
     }
   }
   
-  print (firstNumber + " " + firstFruit);
+  List<String> fruitHelper = new List(2);
+  fruitHelper[0] = firstNumber;
+  fruitHelper[1] = firstFruit;
+  return fruitHelper;
 }
 
 
 
-
+void countFruitLists(List<String> lst){
+  int totalFruits = 0;
+  for(int i=0;i<lst.length;i++){
+    List<String> fruitAndNumber = new List(2);
+    fruitAndNumber = fruitHelper(lst[i]);
+    totalFruits = totalFruits + int.parse(fruitAndNumber[0]);
+    print(fruitAndNumber);
+  }
+  print(totalFruits);
+  //int totalFruits = int.parse(fruitHelper1[0]) + int.parse(fruitHelper2[0]);
+  
+  //print("There are " + totalFruits.toString() + " " + fruitHelper1[1] + " and " + fruitHelper2[1] + ".");
+  
+}
 
 void countFruitSuperSmart(str5, str6){
   
-  String firstNumber = "";
-  String secondNumber = "";
-  String firstFruit = "";
-  String secondFruit = "";
+  List<String> fruitHelper1 = new List (2);
+  fruitHelper1 = fruitHelper(str5);
   
-  // option 1   
-  bool lastCharacterWasNumber = false; 
-  var i = 0;
+  List<String> fruitHelper2 = new List (2);
+  fruitHelper2 = fruitHelper(str6);
   
-  for (i=0;i < str5.length;i++){               
-    if (isNumeric(str5[i])){              
-      
-      firstNumber = firstNumber + str5[i];             
-      lastCharacterWasNumber = true;     
-    }                  
-    if (str5[i]==" " && lastCharacterWasNumber == true) {
-        break;
-      
-      // you are at the end of the number of fruits       
-      // now start creating firstFruit string     
-    }   
-  }   
-  for (i = i+1;i<str5.length; i++){
-    if (str5[i] == " "){
-      break;
-    }
-    else{
-      firstFruit = firstFruit + str5[i];
-    }
-  }
+  int totalFruits = int.parse(fruitHelper1[0]) + int.parse(fruitHelper2[0]);
   
- lastCharacterWasNumber = false;
-
- for (i=0;i < str6.length;i++){
-    
-    if (isNumeric(str6[i])){
-      secondNumber = secondNumber + str6[i]; 
-      lastCharacterWasNumber = true;
-    }
-    if (str6[i] == " " && lastCharacterWasNumber == true){
-      break;
-    }
-    
-  }
+  print("There are " + totalFruits.toString() + " " + fruitHelper1[1] + " and " + fruitHelper2[1] + ".");
   
- for (i = i+1;i<str6.length;i++){
-   if (str6[i] == " "){
-     break;
-   }
-   else{
-     secondFruit = secondFruit + str6[i];
-   }
- }
-  
-  int total = int.parse(firstNumber) + int.parse(secondNumber);
-  
-print ("There are a total of " + total.toString() + " " + firstFruit + " and " + secondFruit + ".");
 }
 
   
