@@ -1,10 +1,13 @@
 void main() {      
-  String sentence1 = "I have 3 apples";   
-  String sentence2 = "I have 5 pears"; 
+  String sentence1 = "I have 3, apples";   
+  String sentence2 = "I have 50.000 pears"; 
   String sentence3 = "We have 7 apples";   
   String sentence4 = "5 pears are in my car";
   String sentence5 = "70 apples were stolen yesterday";
   String sentence6 = "The dog bought 84 pineapples";
+  String sentence7 = "Where did my 60 oranges go";
+  String sentence8 = "give me 5,000 watermelons";
+  
 
   //print out the # of total fruit 
   
@@ -20,34 +23,56 @@ void main() {
   myList.add(sentence4);
   myList.add(sentence5);
   myList.add(sentence6);
+  myList.add(sentence7);
+  myList.add(sentence8);
   
+  var fruitPrices = new Map();
+  fruitPrices['apples'] = .50;
+  fruitPrices['peaches'] = .7;
+  fruitPrices['pears'] = 1.0;
+  fruitPrices['oranges'] = 1.5;
+  fruitPrices['watermelons'] = 2.0;
+  fruitPrices['pineapples'] = 3.0;
+  
+  print(fruitPrices);
+  
+  print(fruitPrices.keys);
+  
+  print(fruitPrices.containsKey('apples'));
+  
+  print ("4 apples cost " + (4*fruitPrices['apples']).toString());
+
   countFruitLists(myList);
   
 }
 
 
 
-
+//isNumeric goes through a string and returns whether or not it is a number
 bool isNumeric(String s) {
  if (s == null) {
    return false;
+ }
+ if (s == "-"){
+   return true;
  }
  return double.tryParse(s) != null;
 }
 
 
-
+//this function finds the number and the name of the fruit and puts them in a list
 List<String> fruitHelper(String str5){
   bool lastCharacterWasNumber = false; 
   var i = 0;
   String firstNumber = "";
   String firstFruit = "";
   
-  for (i=0;i < str5.length;i++){               
+  //goes through the sentence to find the number of fruits
+  for (i=0;i < str5.length;i++){ 
     if (isNumeric(str5[i])){              
       
       firstNumber = firstNumber + str5[i];             
-      lastCharacterWasNumber = true;     
+      lastCharacterWasNumber = true;
     }                  
     if (str5[i]==" " && lastCharacterWasNumber == true) {
         break;
@@ -55,7 +80,8 @@ List<String> fruitHelper(String str5){
       // you are at the end of the number of fruits       
       // now start creating firstFruit string     
     }   
-  }   
+  }  
+  //goes through the sentence beginnning after the number to find the name of the fruit
   for (i = i+1;i<str5.length; i++){
     if (str5[i] == " "){
       break;
@@ -71,21 +97,40 @@ List<String> fruitHelper(String str5){
   return fruitHelper;
 }
 
-
+//this function will print the total number of fruits with the name of the fruit
+//the input of this function is a list of sentences
 
 void countFruitLists(List<String> lst){
   int totalFruits = 0;
+  List<String> namesOfFruit = new List();
+  //the loop goes through every sentence and gets the number of fruit and the name of the fruit using fruitHelper and finds the total amount of fruit and puts that into a list called fruitAndNumber
   for(int i=0;i<lst.length;i++){
     List<String> fruitAndNumber = new List(2);
     fruitAndNumber = fruitHelper(lst[i]);
     totalFruits = totalFruits + int.parse(fruitAndNumber[0]);
-    print(fruitAndNumber);
+    if (namesOfFruit.contains(fruitAndNumber[1])){
+      //if the fruit is already inside namesOfFruit, do nothing
+    }
+    else{
+      namesOfFruit.add(fruitAndNumber[1]);
+    }
   }
-  print(totalFruits);
-  //int totalFruits = int.parse(fruitHelper1[0]) + int.parse(fruitHelper2[0]);
+  String stringFruit = "";
+  for(int i=0;i<namesOfFruit.length;i++){
+    if(namesOfFruit.length == 1){
+      stringFruit = namesOfFruit[0] + ".";
+      break;
+    }
+    if (i == namesOfFruit.length - 1){
+      stringFruit = stringFruit + "and " + namesOfFruit[i] + ".";
+    }
+    else{
+      stringFruit = stringFruit + namesOfFruit[i] + ", ";
+    }
+     
+  }
   
-  //print("There are " + totalFruits.toString() + " " + fruitHelper1[1] + " and " + fruitHelper2[1] + ".");
-  
+  print("There are "+ totalFruits.toString() + " " + stringFruit);
 }
 
 void countFruitSuperSmart(str5, str6){
