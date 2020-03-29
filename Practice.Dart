@@ -1,3 +1,5 @@
+var fruitPrices = new Map();
+  
 void main() {      
   String sentence1 = "I have 3, apples";   
   String sentence2 = "I have 50.000 pears"; 
@@ -5,7 +7,7 @@ void main() {
   String sentence4 = "5 pears are in my car";
   String sentence5 = "70 apples were stolen yesterday";
   String sentence6 = "The dog bought 84 pineapples";
-  String sentence7 = "Where did my 60 oranges go";
+  String sentence7 = "Where did my 60 pears go";
   String sentence8 = "give me 5,000 watermelons";
   
 
@@ -26,7 +28,6 @@ void main() {
   myList.add(sentence7);
   myList.add(sentence8);
   
-  var fruitPrices = new Map();
   fruitPrices['apples'] = .50;
   fruitPrices['peaches'] = .7;
   fruitPrices['pears'] = 1.0;
@@ -34,14 +35,14 @@ void main() {
   fruitPrices['watermelons'] = 2.0;
   fruitPrices['pineapples'] = 3.0;
   
-  print(fruitPrices);
+  /*print(fruitPrices);
   
   print(fruitPrices.keys);
   
   print(fruitPrices.containsKey('apples'));
   
   print ("4 apples cost " + (4*fruitPrices['apples']).toString());
-
+*/
   countFruitLists(myList);
   
 }
@@ -103,16 +104,27 @@ List<String> fruitHelper(String str5){
 void countFruitLists(List<String> lst){
   int totalFruits = 0;
   List<String> namesOfFruit = new List();
+  
+  var fruitCountMap = new Map();
   //the loop goes through every sentence and gets the number of fruit and the name of the fruit using fruitHelper and finds the total amount of fruit and puts that into a list called fruitAndNumber
+  
+  int currentFruitCount = 0;
+  int initialFruitCount = 0;
   for(int i=0;i<lst.length;i++){
     List<String> fruitAndNumber = new List(2);
     fruitAndNumber = fruitHelper(lst[i]);
     totalFruits = totalFruits + int.parse(fruitAndNumber[0]);
+        
     if (namesOfFruit.contains(fruitAndNumber[1])){
       //if the fruit is already inside namesOfFruit, do nothing
+      initialFruitCount = int.parse(fruitCountMap[fruitAndNumber[1]]);
+      currentFruitCount = initialFruitCount + int.parse(fruitAndNumber[0]);
+      fruitCountMap[fruitAndNumber[1].toString()] = currentFruitCount.toString();
+  
     }
     else{
       namesOfFruit.add(fruitAndNumber[1]);
+      fruitCountMap[fruitAndNumber[1].toString()] = fruitAndNumber[0];
     }
   }
   String stringFruit = "";
@@ -131,6 +143,19 @@ void countFruitLists(List<String> lst){
   }
   
   print("There are "+ totalFruits.toString() + " " + stringFruit);
+  
+  for(int i=0; i<namesOfFruit.length;i++){
+    if (fruitPrices.containsKey(namesOfFruit[i])){
+      //print(namesOfFruit[i] + ": \$" + fruitPrices[namesOfFruit[i]].toString());
+    }
+  }
+  fruitCountMap.forEach((k,v) => print('${v} x ${k} @ ' + fruitPrices[k].toString() + ' = ' + '${v}'));
+                                      
+  
+  //for (int i=0; i<fruitAndNumber.length; i++){
+    
+  //}
+  
 }
 
 void countFruitSuperSmart(str5, str6){
