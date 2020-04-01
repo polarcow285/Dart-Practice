@@ -1,14 +1,14 @@
 var fruitPrices = new Map();
   
 void main() {      
-  String sentence1 = "I have 3, apples";   
-  String sentence2 = "I have 50.000 pears"; 
-  String sentence3 = "We have 7 apples";   
-  String sentence4 = "5 pears are in my car";
-  String sentence5 = "70 apples were stolen yesterday";
-  String sentence6 = "The dog bought 84 pineapples";
-  String sentence7 = "Where did my 60 pears go";
-  String sentence8 = "give me 5,000 watermelons";
+  String sentence1 = "I have 3 apples";   
+  String sentence2 = "I have 10 pears"; 
+  String sentence3 = "We have 2 peaches";   
+  String sentence4 = "7 strawberries are in my car";
+  String sentence5 = "32 starfruits were stolen yesterday";
+  String sentence6 = "The dog bought 22 pineapples";
+  String sentence7 = "Where did my 6 pears go";
+  String sentence8 = "give me 18 watermelons";
   
 
   //print out the # of total fruit 
@@ -34,6 +34,8 @@ void main() {
   fruitPrices['oranges'] = 1.5;
   fruitPrices['watermelons'] = 2.0;
   fruitPrices['pineapples'] = 3.0;
+  fruitPrices['strawberries'] = 1.0;
+  fruitPrices['starfruits'] = 3.0;
   
   /*print(fruitPrices);
   
@@ -117,14 +119,15 @@ void countFruitLists(List<String> lst){
         
     if (namesOfFruit.contains(fruitAndNumber[1])){
       //if the fruit is already inside namesOfFruit, do nothing
-      initialFruitCount = int.parse(fruitCountMap[fruitAndNumber[1]]);
+      
+      initialFruitCount = fruitCountMap[fruitAndNumber[1]];
       currentFruitCount = initialFruitCount + int.parse(fruitAndNumber[0]);
-      fruitCountMap[fruitAndNumber[1].toString()] = currentFruitCount.toString();
+      fruitCountMap[fruitAndNumber[1].toString()] = currentFruitCount;
   
     }
     else{
       namesOfFruit.add(fruitAndNumber[1]);
-      fruitCountMap[fruitAndNumber[1].toString()] = fruitAndNumber[0];
+      fruitCountMap[fruitAndNumber[1].toString()] = int.parse(fruitAndNumber[0]);
     }
   }
   String stringFruit = "";
@@ -142,19 +145,20 @@ void countFruitLists(List<String> lst){
      
   }
   
-  print("There are "+ totalFruits.toString() + " " + stringFruit);
+  print("There are "+ totalFruits.toString() + " " + stringFruit + "\n");
   
   for(int i=0; i<namesOfFruit.length;i++){
     if (fruitPrices.containsKey(namesOfFruit[i])){
       //print(namesOfFruit[i] + ": \$" + fruitPrices[namesOfFruit[i]].toString());
     }
+                                 
   }
-  fruitCountMap.forEach((k,v) => print('${v} x ${k} @ ' + fruitPrices[k].toString() + ' = ' + '${v}'));
-                                      
+  fruitCountMap.forEach((k,v) => print('${v}' + ' x ' + k + ' @ \$' + '${fruitPrices[k]}' + ' = \$' + '${v*fruitPrices[k]}'));
   
-  //for (int i=0; i<fruitAndNumber.length; i++){
-    
-  //}
+  
+  var totalAmount = 0;
+  fruitCountMap.forEach((k,v) => totalAmount = totalAmount + v*fruitPrices[k]);
+  print ("\nYour total amount is \$" + '${totalAmount}');
   
 }
 
