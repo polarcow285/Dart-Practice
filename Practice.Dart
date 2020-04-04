@@ -156,7 +156,7 @@ void countFruitLists(List<String> lst){
   fruitCountMap.forEach((k,v) => print('${v}' + ' x ' + k + ' @ \$' + '${fruitPrices[k]}' + ' = \$' + '${v*fruitPrices[k]}'));
   
   
-  var totalAmount = 0;
+  double totalAmount = 0;
   fruitCountMap.forEach((k,v) => totalAmount = totalAmount + v*fruitPrices[k]);
   print ("\nYour total amount is \$" + '${totalAmount}');
   
