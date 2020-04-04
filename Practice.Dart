@@ -1,3 +1,11 @@
+
+
+
+
+
+
+
+
 var fruitPrices = new Map();
   
 void main() {      
@@ -49,8 +57,6 @@ void main() {
   
 }
 
-
-
 //isNumeric goes through a string and returns whether or not it is a number
 bool isNumeric(String s) {
  if (s == null) {
@@ -61,6 +67,45 @@ bool isNumeric(String s) {
  }
  return double.tryParse(s) != null;
 }
+
+String moneyMaker(double v1) {
+  String price;
+  price = v1.toString();
+  
+  if (price.contains('.')){
+    int index = (price.indexOf('.'));
+    int length = price.length;
+    int digitsAfterDecimal = length-index-1;
+     
+    if (digitsAfterDecimal > 2){
+      price = price.substring(0, length-digitsAfterDecimal+3);
+  
+      var thousandthsPlace = price.substring(price.length-1,price.length);
+      var hundredthsPlace = price.substring(price.length-2, price.length-1);
+      
+      if (int.parse(thousandthsPlace) >= 5){
+        hundredthsPlace = '${int.parse(hundredthsPlace)+1}';
+        price = price.substring(0,length-digitsAfterDecimal+1) + hundredthsPlace;
+      }
+      else{
+        price = price.substring(0,length-digitsAfterDecimal+2);
+      }
+    }
+    else if (digitsAfterDecimal == 2){
+      //do nothing
+    }
+    else if(digitsAfterDecimal ==1){
+      price = v1.toString()+'0';
+    }
+  }
+  else{
+    price = price + ".00";
+  }
+  
+  String finalPrice = '\$'+ price;
+  return (finalPrice);
+}
+
 
 
 //this function finds the number and the name of the fruit and puts them in a list
@@ -153,12 +198,12 @@ void countFruitLists(List<String> lst){
     }
                                  
   }
-  fruitCountMap.forEach((k,v) => print('${v}' + ' x ' + k + ' @ \$' + '${fruitPrices[k]}' + ' = \$' + '${v*fruitPrices[k]}'));
+  fruitCountMap.forEach((k,v) => print('${v}' + ' x ' + k + ' @ \$' + '${fruitPrices[k]}' + ' = ' + moneyMaker(v*fruitPrices[k])));
   
   
   double totalAmount = 0;
   fruitCountMap.forEach((k,v) => totalAmount = totalAmount + v*fruitPrices[k]);
-  print ("\nYour total amount is \$" + '${totalAmount}');
+  print ("\nYour total amount is " + moneyMaker(totalAmount));
   
 }
 
