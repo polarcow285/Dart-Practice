@@ -8,33 +8,46 @@ class Person {
   int height;
   String superpower;
   int health;
+  int defense;
+
   List <String> backpack = new List();
   
   static int hands = 2;
   List <String> objectsInHand = new List();
   
   static var fruitPower = {'apple':1, 'strawberry':2, 'watermelon': 3, 'lychee': -2};
+  static var vegetablePower = {'kale': 1, 'broccoli': 2, 'carrot': 4};
+  static var weaponPower = {'fist': 1, 'baseball bat': 2, 'sword': 4};
   
   
   
   //constructor
-  Person(String nameString, int ageNum, String eyeString, int heightNum, String superpowerString, int healthNum) {
+  Person(String nameString, int ageNum, String eyeString, int heightNum, String superpowerString, int healthNum, int defenseNum, String weapon) {
     name = nameString;
     age = ageNum;
     eyecolor = eyeString;
     height = heightNum;
     superpower = superpowerString;
     health = healthNum;
+    defense = defenseNum;
+    
     backpack.add("apple");
-    backpack.add("baseball bat");
+    backpack.add("fist");
+    backpack.add(weapon);
+    backpack.add("broccoli");
     
     
   }
   
   //method
+  static void printHelper(String sentence, Person person){
+    //prints name of the object then put quotes around the string
+    print(person.name + ":" + '"' + sentence + '"');
+  }
+  
   bool isAlive(){
     if (health <= 0){
-      print("I'm sorry but I am dead :(");
+      Person.printHelper("I died!", this);
       return false;
     }
     else{
@@ -44,22 +57,36 @@ class Person {
   void introduce() { 
     if (isAlive() == true){
     
-    print("Hi my name is " + name + ".  I am " + age.toString() + ".  I have " + eyecolor + " eyes!  I have " + hands.toString() + " hands! I am " + height.toString() + " feet tall and my superpower is " + superpower + ". My health is " + health.toString() + "."); 
+    Person.printHelper("Hi my name is " + name + ".  I am " + age.toString() + ".  I have " + eyecolor + " eyes!  I have " + hands.toString() + " hands! I am " + height.toString() + " feet tall and my superpower is " + superpower + ". My health is " + health.toString() + " and my defense is " + defense.toString(), this); 
     }
   }
   
-  void eat(String fruit){
+  bool checkFruit(food){
+    if (fruitPower.containsKey(food)){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+  
+  void eat(String food){
     if (isAlive() == true){
-      if (backpack.contains(fruit)){
-        health = health + fruitPower[fruit];
-        print("I just ate a " + fruit + "! My health is now " + health.toString());
-        backpack.remove(fruit);
+      if (backpack.contains(food) && checkFruit(food)){
+        health = health + fruitPower[food];
+        Person.printHelper("I just ate a " + food + "! My health is now " + health.toString(),this);
+        backpack.remove(food);
+      }
+      else if (backpack.contains(food) && !checkFruit(food)){
+        defense = defense + vegetablePower[food];
+        Person.printHelper("I just ate a " + food + "! My defense is now " + defense.toString(), this);
+        backpack.remove(food);
       }
       else{
-        print("I don't have a " + fruit);
+        Person.printHelper("I don't have a " + food, this);
       }
       if (health <= 0){
-        print("You died!!");
+        Person.printHelper("I died!!", this);
       }
       }
   }
@@ -75,16 +102,19 @@ class Person {
   }
   
   void equip(String item){
-    if (objectsInHand.length == hands){
-      print("My hands are full");
+    if (objectsInHand.contains(item)){
+     Person.printHelper("I took out my " + item + ".", this);
+    }
+    else if (objectsInHand.length == hands){
+      Person.printHelper("My hands are full", this);
     }
     else if(backpack.contains(item)){
       backpack.remove(item);
       objectsInHand.add(item);
-      print("Equiped " + item);
+      Person.printHelper("I took out my " + item + ".", this);
     }
     else{
-      print("I don't have that.");
+      Person.printHelper("I don't have that.", this);
     }
       
   }
@@ -98,10 +128,40 @@ class Person {
     health = 10;
     print("I have been revived!! :)");
   }
+ 
+  void defend(String weapon){
+    this.introduce();
+    Person.printHelper("Give me your best shot!", this);
+    int damageTaken = defense - weaponPower[weapon];
+    if (damageTaken >= 0){
+      Person.printHelper("I was able to defend the attack!", this);
+    }
+    else{
+      health = health - damageTaken.abs();
+      Person.printHelper("I wasn't able to defend the attack! I took " + damageTaken.toString() + " damage and my health is now " + health.toString(), this);
+    }
+    if (isAlive() == true){
+      defense = defense - weaponPower[weapon];
+      if (defense <= 0){
+        defense = 0;
+      }
+      Person.printHelper("My defense is now " + defense.toString(), this);
+    }else{
+      //uses boolean isAlive
+    }
+    
+    print("");
+  }
   
-  void attack(Person name){
-    name.introduce();
-    print("Hello I am going to attack you");
+  void attack(Person human, String weapon){
+    this.introduce();
+    Person.printHelper("PREPARE TO DIE", this);
+    this.equip(weapon);
+    Person.printHelper("Say hello to my little friend", this);
+    print("");
+    human.defend(weapon);
+    
+    
   }
   static void fruitStorm(){
     
@@ -134,47 +194,15 @@ class Person {
 
 void main () {
   
-  Person natalie = Person("Natalie", 14, "brown", 5, "flying", 10);
-  Person ed = Person("Ed", 37, "brown", 5, "eating", 10);
+  Person natalie = Person("Natalie", 14, "brown", 5, "flying", 10, 8, "sword");
+  Person ed = Person("Ed", 37, "brown", 5, "eating", 10, 7, "baseball bat");
   
-  natalie.checkBackpack();
-  natalie.equip("baseball bat");
-  natalie.dropItemsInHand();
-  natalie.checkBackpack();
-  
-  natalie.attack(ed);
-  
-  /*natalie.eat("apple");
-  natalie.eat("apple");
-  
-  natalie.checkBackpack();
-  natalie.equip("baseball bat");
-  */
-
-  /*Person.fruitStorm();
-  
-  natalie.introduce();
-  natalie.starve();
-  natalie.starve();
-  natalie.starve();
-  natalie.eat("apple");
-  natalie.eat("watermelon");
-  natalie.eat("strawberry");
-  natalie.eat("strawberry");
-  natalie.revive();
-  natalie.introduce();
-  
-  Person.fruitParadise();
-  natalie.eat('lychee');
-  Person.fruitChallenge();
+  natalie.attack(ed, "sword");
+  ed.attack(natalie, "fist");
+  ed.eat("broccoli");
+  ed.eat("broccoli");
+  ed.eat("broccoli");
   
   
-  //natalie.changehands(3);
-  
-  //natalie.introduce();
-  
-  
-  //ed.introduce();
- */
   
 }
