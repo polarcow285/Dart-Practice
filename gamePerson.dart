@@ -9,6 +9,8 @@ class Person {
   String superpower;
   int health;
   int defense;
+  
+  bool escape = false;
 
   List <String> backpack = new List();
   
@@ -17,7 +19,7 @@ class Person {
   
   static var fruitPower = {'apple':1, 'strawberry':2, 'watermelon': 3, 'lychee': -2};
   static var vegetablePower = {'kale': 1, 'broccoli': 2, 'carrot': 4};
-  static var weaponPower = {'fist': 1, 'baseball bat': 2, 'sword': 4};
+  static var weaponPower = {'fist': 1, 'baseball bat': 5, 'sword': 4};
   
   
   
@@ -130,11 +132,15 @@ class Person {
   }
  
   void defend(String weapon){
-    this.introduce();
-    Person.printHelper("Give me your best shot!", this);
+    if(health <= 3){
+      if (checkSuperpower()){
+          Person.printHelper("I used my superpower to escape!", this);
+          return;
+        }
+    }
     int damageTaken = defense - weaponPower[weapon];
     if (damageTaken >= 0){
-      Person.printHelper("I was able to defend the attack!", this);
+      Person.printHelper("I didn't take any damage! I was able to defend the attack! My health is now " + health.toString(), this);
     }
     else{
       health = health - damageTaken.abs();
@@ -150,16 +156,80 @@ class Person {
       //uses boolean isAlive
     }
     
+    
     print("");
   }
   
   void attack(Person human, String weapon){
+    human.defend(weapon);
+    
+    
+  }
+  
+  bool checkSuperpower(){
+    if (this.superpower == "flying"){
+      Random superpowerProbability = new Random();
+      int number = superpowerProbability.nextInt(101);
+      if(number < 20){
+        escape = true;
+        return true;
+      }
+      else{
+        return false;
+      }
+    }
+    else{
+      return false;
+    }
+  
+  }
+  
+  void attackSeveralTimes(Person human, String weapon, String opponentWeapon, int numberOfTimes){
     this.introduce();
     Person.printHelper("PREPARE TO DIE", this);
     this.equip(weapon);
     Person.printHelper("Say hello to my little friend", this);
     print("");
-    human.defend(weapon);
+    
+    human.introduce();
+    human.equip(opponentWeapon);
+    Person.printHelper("Give me your best shot!", human);
+    print("");
+    
+    for (int i=0; i < numberOfTimes; i++){
+      if (escape == true){
+        escape = false;
+        print("you got here");
+        break;
+      }
+      print("Attack #" + (i+1).toString());
+      this.attack(human, weapon);
+      
+      if (human.health <= 0){
+        print("Attack stopped because " + human.name + " died.");
+        print(this.name + " is victorious!");
+        break;
+      }
+      human.attack(this, opponentWeapon);
+      
+      if (this.health <= 0){
+        print("Attack stopped because " + this.name + " died.");
+        print(human.name + " is victorious!");
+        break;
+      }
+    }
+    
+    if (human.health > 0 && this.health > 0){
+      if (human.health > this.health){
+        Person.printHelper("I won this battle, I'll get you next time.", human);
+      } 
+      else if (this.health > human.health){
+        Person.printHelper("I won this battle, I'll get you next time.", this);
+      }
+      else{
+        Person.printHelper("This was a draw, I'll see you next time.", this);
+      }
+    }
     
     
   }
@@ -196,12 +266,10 @@ void main () {
   
   Person natalie = Person("Natalie", 14, "brown", 5, "flying", 10, 8, "sword");
   Person ed = Person("Ed", 37, "brown", 5, "eating", 10, 7, "baseball bat");
+ 
+  natalie.attackSeveralTimes(ed, "sword", "baseball bat", 4);
   
-  natalie.attack(ed, "sword");
-  ed.attack(natalie, "fist");
-  ed.eat("broccoli");
-  ed.eat("broccoli");
-  ed.eat("broccoli");
+ 
   
   
   
