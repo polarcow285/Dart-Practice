@@ -19,7 +19,7 @@ class Person {
   
   static var fruitPower = {'apple':1, 'strawberry':2, 'watermelon': 3, 'lychee': -2};
   static var vegetablePower = {'kale': 1, 'broccoli': 2, 'carrot': 4};
-  static var weaponPower = {'fist': 1, 'baseball bat': 5, 'sword': 4};
+  static var weaponPower = {'fist': 1, 'baseball bat': 2, 'sword': 4};
   
   
   
@@ -41,6 +41,8 @@ class Person {
     
   }
   
+
+  
   //method
   static void printHelper(String sentence, Person person){
     //prints name of the object then put quotes around the string
@@ -60,6 +62,7 @@ class Person {
     if (isAlive() == true){
     
     Person.printHelper("Hi my name is " + name + ".  I am " + age.toString() + ".  I have " + eyecolor + " eyes!  I have " + hands.toString() + " hands! I am " + height.toString() + " feet tall and my superpower is " + superpower + ". My health is " + health.toString() + " and my defense is " + defense.toString(), this); 
+   
     }
   }
   
@@ -138,7 +141,7 @@ class Person {
           return;
         }
     }
-    int damageTaken = defense - weaponPower[weapon];
+    int damageTaken = defense - getPower(weapon);
     if (damageTaken >= 0){
       Person.printHelper("I didn't take any damage! I was able to defend the attack! My health is now " + health.toString(), this);
     }
@@ -147,7 +150,7 @@ class Person {
       Person.printHelper("I wasn't able to defend the attack! I took " + damageTaken.toString() + " damage and my health is now " + health.toString(), this);
     }
     if (isAlive() == true){
-      defense = defense - weaponPower[weapon];
+      defense = defense - getPower(weapon);
       if (defense <= 0){
         defense = 0;
       }
@@ -182,6 +185,10 @@ class Person {
       return false;
     }
   
+  }
+  
+  int getPower(weapon){
+    return weaponPower[weapon];
   }
   
   void attackSeveralTimes(Person human, String weapon, String opponentWeapon, int numberOfTimes){
@@ -262,12 +269,35 @@ class Person {
  
 }
 
+class Superhero extends Person{
+  
+  int superMultiplier;
+  
+  Superhero(String nameString, int ageNum, String eyeString, int heightNum, String superpowerString, int healthNum, int defenseNum, String weapon, this.superMultiplier) : super(nameString, ageNum, eyeString, heightNum, superpowerString, healthNum*superMultiplier, defenseNum*superMultiplier, weapon);
+ 
+  @override void introduce(){
+    super.introduce();
+    Person.printHelper("I am a superhero!", this);
+  }
+  
+  @override int getPower(weapon){
+    print(super.getPower(weapon)*superMultiplier);
+    return super.getPower(weapon)*superMultiplier;
+
+  }
+  
+  
+}
+
 void main () {
   
   Person natalie = Person("Natalie", 14, "brown", 5, "flying", 10, 8, "sword");
   Person ed = Person("Ed", 37, "brown", 5, "eating", 10, 7, "baseball bat");
- 
-  natalie.attackSeveralTimes(ed, "sword", "baseball bat", 4);
+  Person bob = Superhero("Bob", 22, "yellow", 8, "invisibility", 15, 10, "sword", 2);
+  
+  bob.checkBackpack();
+  
+  bob.attackSeveralTimes(ed, "sword", "baseball bat", 4);
   
  
   
