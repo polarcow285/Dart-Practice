@@ -121,6 +121,7 @@ class Person {
     else{
       Person.printHelper("I don't have that.", this);
     }
+    print("");
       
   }
    
@@ -134,38 +135,46 @@ class Person {
     print("I have been revived!! :)");
   }
  
-  void defend(String weapon){
-    if(health <= 3){
+  String findWeaponInHand(){
+    String weapon;
+    weaponPower.forEach((k,v) => objectsInHand.contains(k)? weapon = k: weapon = weapon);
+    
+    return weapon;
+  }
+
+  
+  void attack(Person human){
+   
+    if(human.health <= 3){
       if (checkSuperpower()){
-          Person.printHelper("I used my superpower to escape!", this);
+          Person.printHelper("I used my superpower to escape!", human);
           return;
         }
     }
-    int damageTaken = defense - getPower(weapon);
+   
+    String weapon = this.findWeaponInHand();
+     if (weapon == null){
+       this.equip("fist");
+       weapon = "fist";
+    }
+    int damageTaken = human.defense - getPower(weapon);
     if (damageTaken >= 0){
-      Person.printHelper("I didn't take any damage! I was able to defend the attack! My health is now " + health.toString(), this);
+      Person.printHelper("I didn't take any damage! I was able to defend the attack! My health is now " + human.health.toString(), human);
     }
     else{
-      health = health - damageTaken.abs();
-      Person.printHelper("I wasn't able to defend the attack! I took " + damageTaken.toString() + " damage and my health is now " + health.toString(), this);
+      human.health = human.health - damageTaken.abs();
+      Person.printHelper("I wasn't able to defend the attack! I took " + damageTaken.toString() + " damage and my health is now " + human.health.toString(), human);
     }
     if (isAlive() == true){
-      defense = defense - getPower(weapon);
-      if (defense <= 0){
-        defense = 0;
+      human.defense = human.defense - getPower(weapon);
+      if (human.defense <= 0){
+        human.defense = 0;
       }
-      Person.printHelper("My defense is now " + defense.toString(), this);
+      Person.printHelper("My defense is now " + human.defense.toString(), human);
     }else{
       //uses boolean isAlive
     }
-    
-    
     print("");
-  }
-  
-  void attack(Person human, String weapon){
-    human.defend(weapon);
-    
     
   }
   
@@ -187,19 +196,23 @@ class Person {
   
   }
   
+  void criticalAttack(Person human){
+    for (int i=0; i<human.objectsInHand.length;i++){
+      this.backpack.add(human.objectsInHand[i]);
+    }
+    human.dropItemsInHand();
+    
+  }
   int getPower(weapon){
     return weaponPower[weapon];
   }
   
-  void attackSeveralTimes(Person human, String weapon, String opponentWeapon, int numberOfTimes){
+  void attackSeveralTimes(Person human, int numberOfTimes){
     this.introduce();
     Person.printHelper("PREPARE TO DIE", this);
-    this.equip(weapon);
-    Person.printHelper("Say hello to my little friend", this);
     print("");
     
     human.introduce();
-    human.equip(opponentWeapon);
     Person.printHelper("Give me your best shot!", human);
     print("");
     
@@ -210,14 +223,14 @@ class Person {
         break;
       }
       print("Attack #" + (i+1).toString());
-      this.attack(human, weapon);
+      this.attack(human);
       
       if (human.health <= 0){
         print("Attack stopped because " + human.name + " died.");
         print(this.name + " is victorious!");
         break;
       }
-      human.attack(this, opponentWeapon);
+      human.attack(this);
       
       if (this.health <= 0){
         print("Attack stopped because " + this.name + " died.");
@@ -277,11 +290,11 @@ class Superhero extends Person{
  
   @override void introduce(){
     super.introduce();
-    Person.printHelper("I am a superhero!", this);
+    Person.printHelper("I am a superhero! My Supermultiplier is " + superMultiplier.toString(), this);
   }
   
   @override int getPower(weapon){
-    print(super.getPower(weapon)*superMultiplier);
+
     return super.getPower(weapon)*superMultiplier;
 
   }
@@ -291,13 +304,18 @@ class Superhero extends Person{
 
 void main () {
   
-  Person natalie = Person("Natalie", 14, "brown", 5, "flying", 10, 8, "sword");
+  Person natalie = Person("Natalie", 14, "brown", 5, "flying", 10, 9, "sword");
   Person ed = Person("Ed", 37, "brown", 5, "eating", 10, 7, "baseball bat");
   Person bob = Superhero("Bob", 22, "yellow", 8, "invisibility", 15, 10, "sword", 2);
   
-  bob.checkBackpack();
-  
-  bob.attackSeveralTimes(ed, "sword", "baseball bat", 4);
+  //bob.equip("sword");
+  natalie.equip("sword");
+  ed.equip("baseball bat");
+ 
+  natalie.criticalAttack(ed);
+  print(natalie.backpack);
+  print(natalie.objectsInHand);
+  print(ed.objectsInHand);
   
  
   
