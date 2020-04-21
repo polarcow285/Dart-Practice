@@ -35,9 +35,12 @@ class Person {
     defense = defenseNum;
     
     backpack.add("apple");
-    backpack.add("fist");
-    backpack.add(weapon);
     backpack.add("broccoli");
+    backpack.add(weapon);
+    if (weapon != "fist"){
+       backpack.add("fist");
+    }
+    
     
     
   }
@@ -45,14 +48,14 @@ class Person {
 
   
   //method
-  static void printHelper(String sentence, Person person){
+  void printHelper(String sentence){
     //prints name of the object then put quotes around the string
-    print(person.name + ":" + '"' + sentence + '"');
+    print(this.name + ":" + '"' + sentence + '"');
   }
   
   bool isAlive(){
     if (health <= 0){
-      Person.printHelper("I died!", this);
+      this.printHelper("I died!");
       return false;
     }
     else{
@@ -62,7 +65,7 @@ class Person {
   void introduce() { 
     if (isAlive() == true){
     
-    Person.printHelper("Hi my name is " + name + ".  I am " + age.toString() + ".  I have " + eyecolor + " eyes!  I have " + hands.toString() + " hands! I am " + height.toString() + " feet tall and my superpower is " + superpower + ". My health is " + health.toString() + " and my defense is " + defense.toString(), this); 
+    this.printHelper("Hi my name is " + name + ".  I am " + age.toString() + ".  I have " + eyecolor + " eyes!  I have " + hands.toString() + " hands! I am " + height.toString() + " feet tall and my superpower is " + superpower + ". My health is " + health.toString() + " and my defense is " + defense.toString()); 
    
     }
   }
@@ -80,19 +83,19 @@ class Person {
     if (isAlive() == true){
       if (backpack.contains(food) && checkFruit(food)){
         health = health + fruitPower[food];
-        Person.printHelper("I just ate a " + food + "! My health is now " + health.toString(),this);
+        this.printHelper("I just ate a " + food + "! My health is now " + health.toString());
         backpack.remove(food);
       }
       else if (backpack.contains(food) && !checkFruit(food)){
         defense = defense + vegetablePower[food];
-        Person.printHelper("I just ate a " + food + "! My defense is now " + defense.toString(), this);
+        this.printHelper("I just ate a " + food + "! My defense is now " + defense.toString());
         backpack.remove(food);
       }
       else{
-        Person.printHelper("I don't have a " + food, this);
+        this.printHelper("I don't have a " + food);
       }
       if (health <= 0){
-        Person.printHelper("I died!!", this);
+        this.printHelper("I died!!");
       }
       }
   }
@@ -109,18 +112,18 @@ class Person {
   
   void equip(String item){
     if (objectsInHand.contains(item)){
-     Person.printHelper("I took out my " + item + ".", this);
+     this.printHelper("I took out my " + item + ".");
     }
     else if (objectsInHand.length == hands){
-      Person.printHelper("My hands are full", this);
+      this.printHelper("My hands are full");
     }
     else if(backpack.contains(item)){
       backpack.remove(item);
       objectsInHand.add(item);
-      Person.printHelper("I took out my " + item + ".", this);
+      this.printHelper("I took out my " + item + ".");
     }
     else{
-      Person.printHelper("I don't have that.", this);
+      this.printHelper("I don't have that.");
     }
     print("");
       
@@ -148,7 +151,7 @@ class Person {
    
     if(human.health <= 3){
       if (checkSuperpower()){
-          Person.printHelper("I used my superpower to escape!", human);
+          human.printHelper("I used my superpower to escape!");
           return;
         }
     }
@@ -160,18 +163,18 @@ class Person {
     }
     int damageTaken = human.defense - getPower(weapon);
     if (damageTaken >= 0){
-      Person.printHelper("I didn't take any damage! I was able to defend the attack! My health is now " + human.health.toString(), human);
+      human.printHelper("I didn't take any damage! I was able to defend the attack! My health is now " + human.health.toString());
     }
     else{
       human.health = human.health - damageTaken.abs();
-      Person.printHelper("I wasn't able to defend the attack! I took " + damageTaken.toString() + " damage and my health is now " + human.health.toString(), human);
+      human.printHelper("I wasn't able to defend the attack! I took " + damageTaken.toString() + " damage and my health is now " + human.health.toString());
     }
     if (isAlive() == true){
       human.defense = human.defense - getPower(weapon);
       if (human.defense <= 0){
         human.defense = 0;
       }
-      Person.printHelper("My defense is now " + human.defense.toString(), human);
+      human.printHelper("My defense is now " + human.defense.toString());
     }else{
       //uses boolean isAlive
     }
@@ -210,11 +213,11 @@ class Person {
   
   void attackSeveralTimes(Person human, int numberOfTimes){
     this.introduce();
-    Person.printHelper("PREPARE TO DIE", this);
+    this.printHelper("PREPARE TO DIE");
     print("");
     
     human.introduce();
-    Person.printHelper("Give me your best shot!", human);
+    human.printHelper("Give me your best shot!");
     print("");
     
     for (int i=0; i < numberOfTimes; i++){
@@ -242,13 +245,13 @@ class Person {
     
     if (human.health > 0 && this.health > 0){
       if (human.health > this.health){
-        Person.printHelper("I won this battle, I'll get you next time.", human);
+        human.printHelper("I won this battle, I'll get you next time.");
       } 
       else if (this.health > human.health){
-        Person.printHelper("I won this battle, I'll get you next time.", this);
+        this.printHelper("I won this battle, I'll get you next time.");
       }
       else{
-        Person.printHelper("This was a draw, I'll see you next time.", this);
+        this.printHelper("This was a draw, I'll see you next time.");
       }
     }
     
@@ -291,7 +294,7 @@ class Superhero extends Person{
  
   @override void introduce(){
     super.introduce();
-    Person.printHelper("I am a superhero! My Supermultiplier is " + superMultiplier.toString(), this);
+    this.printHelper("I am a superhero! My Supermultiplier is " + superMultiplier.toString());
   }
   
   @override int getPower(weapon){
@@ -300,15 +303,62 @@ class Superhero extends Person{
 
   }
   
-  
 }
+
+class Nation {
+  Person leader;
+  Superhero superhero;
+  int armySize;
+
+  List <Person> armyList = new List();
+
+  Nation(Person leaderPerson, Superhero superheroPerson, int armyMembers){
+    leaderPerson = leader;
+    superheroPerson = superhero;
+    armySize = armyMembers;
+  }
+
+  void generateArmy(){
+   for(int i = 0; i < armySize; i++){
+    
+    
+   
+    String name = "minion";
+    int age = 234;
+    Random index = new Random();
+    //String eyecolor = colorList[index.nextInt(5)];
+    String eyecolor = "brown";
+    int height = index.nextInt(7)+1;
+    //String superpower = superpowerList[index.nextInt(3)];
+    String superpower = "flying";
+    int health = 10;
+    int defense = index.nextInt(11);
+    String weapon = "sword";
+    /*List<String> weaponList = new List();
+    for(String w in Person.weaponPower.keys){
+      weaponList.add(w);
+    }
+    String weapon = weaponList[index.nextInt(3)];
+    */
+    armyList.add(Person(name, age, eyecolor, height, superpower, health, defense, weapon));
+    
+
+     
+   }
+  }
+
+  
+
+}
+
 
 void main () {
   
   /*Person natalie = Person("Natalie", 14, "brown", 5, "flying", 10, 9, "sword");
   Person ed = Person("Ed", 37, "brown", 5, "eating", 10, 7, "baseball bat");
-  Person bob = Superhero("Bob", 22, "yellow", 8, "invisibility", 15, 10, "sword", 2);
   */
+  Person bob = Superhero("Bob", 22, "yellow", 8, "invisibility", 15, 10, "sword", 2);
+  
 
   print ("Hello and welcome to gamePerson! How many players will be joining?");
   int numberOfPlayers = int.parse(stdin.readLineSync());
@@ -320,7 +370,7 @@ void main () {
   colorList[3] = "blue";
 
   List <String> superpowerList = ["flying", "eating", "invisibility", "super strength"];
-
+  
   for (int v = 0;v < numberOfPlayers; v++){
     print("Player ${v+1}, What is your name?");
     String name = stdin.readLineSync();
@@ -334,19 +384,29 @@ void main () {
     String superpower = superpowerList[index.nextInt(3)]; 
     int health = 10;
     int defense = index.nextInt(11);
-    String weapon = "sword"; //finish the randomization
+    
+    List<String> weaponList = new List();
+    for(String w in Person.weaponPower.keys){
+      weaponList.add(w);
+    }
+    String weapon = weaponList[index.nextInt(3)];
+    
 
     
 
     personList.add(Person(name, age, eyecolor, height, superpower, health, defense, weapon));
   }
 
-  print (personList);
+  
 
   //Person person1 = Person(name, age, eyecolor, 5, "flying", 10, 9, "sword");
   for(int i = 0; i< personList.length; i++){
     personList[i].introduce();
+    
   }
+
+  Nation personNation = Nation(personList[0], bob, 10);
+  print (personNation);
 
 
 
