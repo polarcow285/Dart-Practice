@@ -311,40 +311,64 @@ class Nation {
   int armySize;
 
   List <Person> armyList = new List();
+  List <String> minionNames = ["Jerry", "Bobby", "Minion", "Moose", "Apple", "Daisy", "Vexx", "ZHC", "Pacon", "Texas Instruments"];
+  List <String> colorList = ["brown", "yellow", "black", "blue"];
+  List <String> superpowerList = ["flying", "eating", "invisibility", "super strength"];
+  List<String> weaponList = new List();
 
   Nation(Person leaderPerson, Superhero superheroPerson, int armyMembers){
-    leaderPerson = leader;
-    superheroPerson = superhero;
+    leader = leaderPerson;
+    superhero = superheroPerson;
     armySize = armyMembers;
+    for(String w in Person.weaponPower.keys){
+      weaponList.add(w);
+    }
   }
 
   void generateArmy(){
    for(int i = 0; i < armySize; i++){
     
     
-   
-    String name = "minion";
-    int age = 234;
     Random index = new Random();
-    //String eyecolor = colorList[index.nextInt(5)];
-    String eyecolor = "brown";
+    String name = minionNames[index.nextInt(10)];
+    int age = 234;
+    String eyecolor = colorList[index.nextInt(4)];
     int height = index.nextInt(7)+1;
-    //String superpower = superpowerList[index.nextInt(3)];
-    String superpower = "flying";
+    String superpower = superpowerList[index.nextInt(3)];
     int health = 10;
     int defense = index.nextInt(11);
-    String weapon = "sword";
-    /*List<String> weaponList = new List();
-    for(String w in Person.weaponPower.keys){
-      weaponList.add(w);
-    }
-    String weapon = weaponList[index.nextInt(3)];
-    */
-    armyList.add(Person(name, age, eyecolor, height, superpower, health, defense, weapon));
     
-
+    String weapon = weaponList[index.nextInt(2)];
+    
+    armyList.add(Person(name, age, eyecolor, height, superpower, health, defense, weapon));
      
    }
+  }
+
+  void nationInfo(){
+    print("Leader name: " + leader.name);
+    print("Army size: $armySize");
+    print("Superhero: " + superhero.name);
+    
+    int nationHealth = 0;
+    armyList.forEach((v)=> nationHealth = nationHealth + v.health);
+    print("Toal Nation Health: $nationHealth");
+    
+    int nationDefense = 0;
+    armyList.forEach((v)=> nationDefense = nationDefense + v.defense);
+    print("Total Nation Defense: $nationDefense");
+    
+    
+    for (Person p in armyList){
+      for (String w in p.backpack){
+        if(weaponList.contains(w) && w != "fist"){
+          print(p.name + ": " + w);
+        }
+        else{
+          //print(p.name);
+        }
+      }
+    }
   }
 
   
@@ -376,15 +400,13 @@ void main () {
     String name = stdin.readLineSync();
     print("What is your age?");
     int age = int.parse(stdin.readLineSync());
-    //print("What is your eye color?");
-    //String eyecolor = stdin.readLineSync();
     Random index = new Random();
     String eyecolor = colorList[index.nextInt(5)];
     int height = index.nextInt(7)+1;
     String superpower = superpowerList[index.nextInt(3)]; 
     int health = 10;
     int defense = index.nextInt(11);
-    
+  
     List<String> weaponList = new List();
     for(String w in Person.weaponPower.keys){
       weaponList.add(w);
@@ -397,8 +419,6 @@ void main () {
     personList.add(Person(name, age, eyecolor, height, superpower, health, defense, weapon));
   }
 
-  
-
   //Person person1 = Person(name, age, eyecolor, 5, "flying", 10, 9, "sword");
   for(int i = 0; i< personList.length; i++){
     personList[i].introduce();
@@ -406,7 +426,9 @@ void main () {
   }
 
   Nation personNation = Nation(personList[0], bob, 10);
-  print (personNation);
+  personNation.generateArmy();
+  personNation.nationInfo();
+ 
 
 
 
