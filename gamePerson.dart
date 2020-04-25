@@ -10,6 +10,7 @@ class Person {
   String superpower;
   int health;
   int defense;
+  Nation nation;
   
   bool escape = false;
 
@@ -20,7 +21,7 @@ class Person {
   
   static var fruitPower = {'apple':1, 'strawberry':2, 'watermelon': 3, 'lychee': -2};
   static var vegetablePower = {'kale': 1, 'broccoli': 2, 'carrot': 4};
-  static var weaponPower = {'fist': 1, 'baseball bat': 2, 'sword': 4};
+  static var weaponPower = {'fist': 1, 'baseball bat': 2, 'sword': 4, 'magical rays of fruit': 7};
   
   
   
@@ -309,16 +310,17 @@ class Nation {
   Person leader;
   Superhero superhero;
   int armySize;
+  var numberOfWeaponsMap  = new Map();
 
   List <Person> armyList = new List();
-  List <String> minionNames = ["Jerry", "Bobby", "Minion", "Moose", "Apple", "Daisy", "Vexx", "ZHC", "Pacon", "Texas Instruments"];
-  List <String> colorList = ["brown", "yellow", "black", "blue"];
-  List <String> superpowerList = ["flying", "eating", "invisibility", "super strength"];
+  static List <String> minionNames = ["Jerry", "Bobby", "Minion", "Moose", "Apple", "Daisy", "Vexx", "ZHC", "Pacon", "Texas Instruments"];
+  static List <String> colorList = ["brown", "yellow", "black", "blue"];
+  static List <String> superpowerList = ["flying", "eating", "invisibility", "super strength"];
   List<String> weaponList = new List();
 
-  Nation(Person leaderPerson, Superhero superheroPerson, int armyMembers){
+  Nation(Person leaderPerson, String superheroName, int armyMembers){
     leader = leaderPerson;
-    superhero = superheroPerson;
+    superhero = Superhero(superheroName, 22, "yellow", 8, "invisibility", 15, 10, "sword", 2);
     armySize = armyMembers;
     for(String w in Person.weaponPower.keys){
       weaponList.add(w);
@@ -330,15 +332,15 @@ class Nation {
     
     
     Random index = new Random();
-    String name = minionNames[index.nextInt(10)];
+    String name = minionNames[index.nextInt(minionNames.length)];
     int age = 234;
-    String eyecolor = colorList[index.nextInt(4)];
+    String eyecolor = colorList[index.nextInt(colorList.length)];
     int height = index.nextInt(7)+1;
-    String superpower = superpowerList[index.nextInt(3)];
+    String superpower = superpowerList[index.nextInt(superpowerList.length)];
     int health = 10;
     int defense = index.nextInt(11);
     
-    String weapon = weaponList[index.nextInt(2)];
+    String weapon = weaponList[index.nextInt(weaponList.length)];
     
     armyList.add(Person(name, age, eyecolor, height, superpower, health, defense, weapon));
      
@@ -357,43 +359,44 @@ class Nation {
     int nationDefense = 0;
     armyList.forEach((v)=> nationDefense = nationDefense + v.defense);
     print("Total Nation Defense: $nationDefense");
-    
-    
+
+    //finds the number of weapons for each weapon
     for (Person p in armyList){
+      //goes through p's backpack and finds their weapons
       for (String w in p.backpack){
-        if(weaponList.contains(w) && w != "fist"){
-          print(p.name + ": " + w);
-        }
-        else{
-          //print(p.name);
+
+        if(weaponList.contains(w)){
+          //if this weapon has been added as a key to the Map before, then update the number of weapons
+          if(numberOfWeaponsMap.containsKey(w)){
+              numberOfWeaponsMap[w] = numberOfWeaponsMap[w] + 1;
+          }
+          //else create new key
+          else{
+              numberOfWeaponsMap[w] = 1;
+          }
+
         }
       }
     }
+    int nationPower = 0;
+    numberOfWeaponsMap.forEach((k,v)=> nationPower = nationPower + v*(Person.weaponPower[k]));
+    print("Total Nation Power: $nationPower");
+    print("Weapons are: $numberOfWeaponsMap");
+
   }
-
-  
-
 }
-
 
 void main () {
   
   /*Person natalie = Person("Natalie", 14, "brown", 5, "flying", 10, 9, "sword");
   Person ed = Person("Ed", 37, "brown", 5, "eating", 10, 7, "baseball bat");
   */
-  Person bob = Superhero("Bob", 22, "yellow", 8, "invisibility", 15, 10, "sword", 2);
+  
   
 
   print ("Hello and welcome to gamePerson! How many players will be joining?");
   int numberOfPlayers = int.parse(stdin.readLineSync());
   List <Person> personList = new List();
-  List <String> colorList = new List(5);
-  colorList[0] = "brown";
-  colorList[1] = "yellow";
-  colorList[2] = "black";
-  colorList[3] = "blue";
-
-  List <String> superpowerList = ["flying", "eating", "invisibility", "super strength"];
   
   for (int v = 0;v < numberOfPlayers; v++){
     print("Player ${v+1}, What is your name?");
@@ -401,9 +404,9 @@ void main () {
     print("What is your age?");
     int age = int.parse(stdin.readLineSync());
     Random index = new Random();
-    String eyecolor = colorList[index.nextInt(5)];
+    String eyecolor = Nation.colorList[index.nextInt(Nation.colorList.length)];
     int height = index.nextInt(7)+1;
-    String superpower = superpowerList[index.nextInt(3)]; 
+    String superpower = Nation.superpowerList[index.nextInt(Nation.superpowerList.length)]; 
     int health = 10;
     int defense = index.nextInt(11);
   
@@ -411,7 +414,7 @@ void main () {
     for(String w in Person.weaponPower.keys){
       weaponList.add(w);
     }
-    String weapon = weaponList[index.nextInt(3)];
+    String weapon = weaponList[index.nextInt(weaponList.length)];
     
 
     
@@ -422,13 +425,14 @@ void main () {
   //Person person1 = Person(name, age, eyecolor, 5, "flying", 10, 9, "sword");
   for(int i = 0; i< personList.length; i++){
     personList[i].introduce();
-    
+    personList[i].nation = Nation(personList[i], "bob", 10);
+    personList[i].nation.generateArmy();
+    personList[i].nation.nationInfo();
+  
   }
 
-  Nation personNation = Nation(personList[0], bob, 10);
-  personNation.generateArmy();
-  personNation.nationInfo();
- 
+  
+  
 
 
 
