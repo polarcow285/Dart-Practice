@@ -13,6 +13,7 @@ class Person {
   Nation nation;
   
   bool escape = false;
+  static bool silentMode = false;
 
   List <String> backpack = new List();
   
@@ -26,7 +27,7 @@ class Person {
   
   
   //constructor
-  Person(String nameString, int ageNum, String eyeString, int heightNum, String superpowerString, int healthNum, int defenseNum, String weapon) {
+  Person(String nameString, int ageNum, String eyeString, int heightNum, String superpowerString, int healthNum, int defenseNum, String weapon, Nation nationObject) {
     name = nameString;
     age = ageNum;
     eyecolor = eyeString;
@@ -34,6 +35,7 @@ class Person {
     superpower = superpowerString;
     health = healthNum;
     defense = defenseNum;
+    nation = nationObject;
     
     backpack.add("apple");
     backpack.add("broccoli");
@@ -50,8 +52,14 @@ class Person {
   
   //method
   void printHelper(String sentence){
-    //prints name of the object then put quotes around the string
-    print(this.name + ":" + '"' + sentence + '"');
+    if (silentMode == false){
+      //prints name of the object then put quotes around the string
+      print(this.name + "(Nation of " + this.nation.leader.name + "):" + '"' + sentence + '"');
+    }
+    else{
+      //do nothing
+    }
+    
   }
   
   bool isAlive(){
@@ -126,7 +134,7 @@ class Person {
     else{
       this.printHelper("I don't have that.");
     }
-    print("");
+    if (silentMode == false) print("");
       
   }
    
@@ -179,7 +187,7 @@ class Person {
     }else{
       //uses boolean isAlive
     }
-    print("");
+    if (silentMode == false) print("");
     
   }
   
@@ -215,19 +223,20 @@ class Person {
   void attackSeveralTimes(Person human, int numberOfTimes){
     this.introduce();
     this.printHelper("PREPARE TO DIE");
-    print("");
+    if (silentMode == false) print("");
     
     human.introduce();
     human.printHelper("Give me your best shot!");
-    print("");
+    if (silentMode == false) print("");
     
     for (int i=0; i < numberOfTimes; i++){
       if (escape == true){
         escape = false;
-        print("you got here");
         break;
       }
-      print("Attack #" + (i+1).toString());
+      if (silentMode == false){
+        print("Attack #" + (i+1).toString());
+      }
       this.attack(human);
       
       if (human.health <= 0){
@@ -291,7 +300,7 @@ class Superhero extends Person{
   
   int superMultiplier;
   
-  Superhero(String nameString, int ageNum, String eyeString, int heightNum, String superpowerString, int healthNum, int defenseNum, String weapon, this.superMultiplier) : super(nameString, ageNum, eyeString, heightNum, superpowerString, healthNum*superMultiplier, defenseNum*superMultiplier, weapon);
+  Superhero(String nameString, int ageNum, String eyeString, int heightNum, String superpowerString, int healthNum, int defenseNum, String weapon, Nation nationObject, this.superMultiplier) : super(nameString, ageNum, eyeString, heightNum, superpowerString, healthNum*superMultiplier, defenseNum*superMultiplier, weapon, nationObject);
  
   @override void introduce(){
     super.introduce();
@@ -320,7 +329,7 @@ class Nation {
 
   Nation(Person leaderPerson, String superheroName, int armyMembers){
     leader = leaderPerson;
-    superhero = Superhero(superheroName, 22, "yellow", 8, "invisibility", 15, 10, "sword", 2);
+    superhero = Superhero(superheroName, 22, "yellow", 8, "invisibility", 15, 10, "sword", this, 2);
     armySize = armyMembers;
     for(String w in Person.weaponPower.keys){
       weaponList.add(w);
@@ -342,7 +351,7 @@ class Nation {
     
     String weapon = weaponList[index.nextInt(weaponList.length)];
     
-    armyList.add(Person(name, age, eyecolor, height, superpower, health, defense, weapon));
+    armyList.add(Person(name, age, eyecolor, height, superpower, health, defense, weapon, this));
      
    }
   }
@@ -382,8 +391,27 @@ class Nation {
     numberOfWeaponsMap.forEach((k,v)=> nationPower = nationPower + v*(Person.weaponPower[k]));
     print("Total Nation Power: $nationPower");
     print("Weapons are: $numberOfWeaponsMap");
-
   }
+
+  void nationAttack(Nation opponentNation){
+    for (int i = 0; i <this.armyList.length; i++){
+      this.armyList[i].attackSeveralTimes(opponentNation.armyList[i], 1);
+      
+    }
+    this.nationInfo();
+    opponentNation.nationInfo();
+
+    for (int i = 0; i < this.armyList.length; i++ ){
+      if ((i == this.armyList.length - 1){
+        this.armyList[i].attackSeveralTimes(opponentNation.armyList[0], 1);
+      }
+      else{
+        this.armyList[i].attackSeveralTimes(opponentNation.armyList[i+1], 1);
+      }
+      
+    }
+  }
+
 }
 
 void main () {
@@ -401,9 +429,8 @@ void main () {
   for (int v = 0;v < numberOfPlayers; v++){
     print("Player ${v+1}, What is your name?");
     String name = stdin.readLineSync();
-    print("What is your age?");
-    int age = int.parse(stdin.readLineSync());
     Random index = new Random();
+    int age = index.nextInt(100)+1;
     String eyecolor = Nation.colorList[index.nextInt(Nation.colorList.length)];
     int height = index.nextInt(7)+1;
     String superpower = Nation.superpowerList[index.nextInt(Nation.superpowerList.length)]; 
@@ -419,18 +446,30 @@ void main () {
 
     
 
-    personList.add(Person(name, age, eyecolor, height, superpower, health, defense, weapon));
+    personList.add(Person(name, age, eyecolor, height, superpower, health, defense, weapon, null));
   }
 
   //Person person1 = Person(name, age, eyecolor, 5, "flying", 10, 9, "sword");
   for(int i = 0; i< personList.length; i++){
-    personList[i].introduce();
     personList[i].nation = Nation(personList[i], "bob", 10);
+    personList[i].introduce();
     personList[i].nation.generateArmy();
     personList[i].nation.nationInfo();
+    print("");
   
   }
 
+ print("Player 1, what would you like to do? \nAttack or Fruit Storm or End Turn");
+  
+ if (stdin.readLineSync() == "Attack"){
+    print("****************");
+    Person.silentMode = true;
+    personList[0].nation.nationAttack(personList[1].nation);
+  }
+  else{
+    print("Unknown command");
+  }
+  
   
   
 
