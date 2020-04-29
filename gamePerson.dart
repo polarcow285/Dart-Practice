@@ -392,24 +392,50 @@ class Nation {
     print("Total Nation Power: $nationPower");
     print("Weapons are: $numberOfWeaponsMap");
   }
-
+  void armyHealth(){
+    //number of army members, army name: health
+    print("Size of army: " + this.armyList.length.toString());
+    this.armyList.forEach((v) => print(v.name + ": " + v.health.toString()));
+  }
   void nationAttack(Nation opponentNation){
-    for (int i = 0; i <this.armyList.length; i++){
-      this.armyList[i].attackSeveralTimes(opponentNation.armyList[i], 1);
+    for (int i = 0; i<40; i++){
       
-    }
-    this.nationInfo();
-    opponentNation.nationInfo();
+      for (int i = 0; i <this.armyList.length; i++){
+        if(this.armyList.length == 0){
+          print(this.leader.name + "'s army is victorious!!");
+          break;
+        }
+        if(opponentNation.armyList.length == 0){
+          print(opponentNation.leader.name + "'s army is victorious!!");
+          break;
+        }
+        if (i>=this.armyList.length || i>=opponentNation.armyList.length){
+          break;
+        }
+        this.armyList[i].attackSeveralTimes(opponentNation.armyList[i], 1);
 
-    for (int i = 0; i < this.armyList.length; i++ ){
-      if ((i == this.armyList.length - 1){
-        this.armyList[i].attackSeveralTimes(opponentNation.armyList[0], 1);
+        for(int j = 0; j < this.armyList.length; j++){
+          if(this.armyList[j].health <= 0){
+            this.armyList.removeAt(j);
+          }
+        }
+        for(int j = 0; j<opponentNation.armyList.length; j++){
+          if(opponentNation.armyList[j].health <= 0){
+            opponentNation.armyList.removeAt(j);
+          }
+        }
       }
-      else{
-        this.armyList[i].attackSeveralTimes(opponentNation.armyList[i+1], 1);
-      }
-      
+      opponentNation.armyList.insert(0, opponentNation.armyList.removeLast());
+      print("************************************");
+      this.armyHealth();
+      print("");
+      opponentNation.armyHealth();
+      print("");
+
     }
+      
+
+
   }
 
 }
@@ -451,7 +477,7 @@ void main () {
 
   //Person person1 = Person(name, age, eyecolor, 5, "flying", 10, 9, "sword");
   for(int i = 0; i< personList.length; i++){
-    personList[i].nation = Nation(personList[i], "bob", 10);
+    personList[i].nation = Nation(personList[i], "bob", 3);
     personList[i].introduce();
     personList[i].nation.generateArmy();
     personList[i].nation.nationInfo();
