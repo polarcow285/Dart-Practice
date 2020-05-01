@@ -394,43 +394,64 @@ class Nation {
   }
   void armyHealth(){
     //number of army members, army name: health
-    print("Size of army: " + this.armyList.length.toString());
+    print("Size of " + this.leader.name + "'s army: " + this.armyList.length.toString());
     this.armyList.forEach((v) => print(v.name + ": " + v.health.toString()));
   }
-  void nationAttack(Nation opponentNation){
-    for (int i = 0; i<40; i++){
-      
+
+  void feedArmy(){
+    this.armyList.forEach((p)=> p.eat("apple"));
+    this.nationInfo();
+  }
+  void nationAttack(Nation opponentNation, int numberOfTimes){
+    bool win = false;
+    //round robin style 
+    for (int i = 0; i<numberOfTimes; i++){
+      //flag that checks if anyone has won. if so, stop the attack
+      if (win == true) break;
       for (int i = 0; i <this.armyList.length; i++){
-        if(this.armyList.length == 0){
-          print(this.leader.name + "'s army is victorious!!");
-          break;
-        }
-        if(opponentNation.armyList.length == 0){
-          print(opponentNation.leader.name + "'s army is victorious!!");
-          break;
-        }
+        
+        //if either army is smaller than the other, break out of the loop so we don't exceed list index
         if (i>=this.armyList.length || i>=opponentNation.armyList.length){
           break;
         }
         this.armyList[i].attackSeveralTimes(opponentNation.armyList[i], 1);
-
+        
+        //removes dead army members
         for(int j = 0; j < this.armyList.length; j++){
           if(this.armyList[j].health <= 0){
             this.armyList.removeAt(j);
           }
         }
+        //removes dead army members
         for(int j = 0; j<opponentNation.armyList.length; j++){
           if(opponentNation.armyList[j].health <= 0){
             opponentNation.armyList.removeAt(j);
           }
         }
+        if(this.armyList.length == 0){
+          print(opponentNation.leader.name + "'s army is victorious!!");
+          win = true;
+          break;
+        }
+        if(opponentNation.armyList.length == 0){
+          print(this.leader.name + "'s army is victorious!!");
+          win = true;
+          break;
+        }
       }
-      opponentNation.armyList.insert(0, opponentNation.armyList.removeLast());
-      print("************************************");
-      this.armyHealth();
-      print("");
-      opponentNation.armyHealth();
-      print("");
+
+      if (win == false){
+        //shifts opponent's army by one for the round robin
+        opponentNation.armyList.insert(0, opponentNation.armyList.removeLast());
+        print("************************************");
+        print("Attack # ${i+1}");
+        print("");
+        this.armyHealth();
+        print("");
+        opponentNation.armyHealth();
+        print("");
+      }
+      
 
     }
       
@@ -485,16 +506,45 @@ void main () {
   
   }
 
- print("Player 1, what would you like to do? \nAttack or Fruit Storm or End Turn");
+  while(1 == 1){
+    for(int i = 0; i<personList.length; i++){
+      if (personList[i].nation.armyList.length == 0){
+        print("Skipped Player ${i+1}'s turn");
+        continue;
+      }
+      print("Player ${i+1}, what would you like to do? \nAttack or Feed Army");
+      var commands = stdin.readLineSync();
+      if (commands == "Exit"){
+        print("Thanks for playing!");
+        return;
+      }
+      if (commands == "Attack"){
+        print("****************");
+        Person.silentMode = true;
+        print("Which player do you want to attack? (1-${personList.length})");
+        int player = int.parse(stdin.readLineSync());
+        print("How many times would you like to attack?");
+        int numberOfTimes = int.parse(stdin.readLineSync());
+        if (personList[player-1].nation.armyList.length == 0){
+          print("Player ${player} is already dead");
+        }
+        else{
+          personList[i].nation.nationAttack(personList[player-1].nation, numberOfTimes);
+        } 
+      }
+      else if (commands == "Feed Army"){
+        Person.silentMode = true;
+        personList[i].nation.feedArmy();
+      }
+      
+      else{
+        print("Unknown command");
+      }
+    }
+  }
+ 
   
- if (stdin.readLineSync() == "Attack"){
-    print("****************");
-    Person.silentMode = true;
-    personList[0].nation.nationAttack(personList[1].nation);
-  }
-  else{
-    print("Unknown command");
-  }
+ 
   
   
   
