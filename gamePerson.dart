@@ -531,7 +531,43 @@ void main () {
         else{
           personList[i].nation.nationAttack(personList[player-1].nation, numberOfTimes);
         } 
+       List<bool> aliveList = new List();
+        for (Person n in personList){
+          if (n.nation.armyList.length == 0){
+            aliveList.add(false);
+          }
+          else{
+            aliveList.add(true);
+          }
+        }
+
+        int winner = -1;
+        for(int i = 0; i < aliveList.length; i++){
+          if (aliveList[i] == true){
+            if(winner == -1){
+              winner = i;
+             
+            }
+            else{
+              //there is more than one person alive
+              winner = -2;
+            }
+          }
+        }
+        if(winner == -2){
+            //the game is still going on
+          }
+          else if(winner == -1){
+            //everyone is dead
+          }
+          else if(winner != -1){
+            
+            print("Player ${winner + 1} is the winner!!!!!!!!");
+            return;
+          }
+        
       }
+
       else if (commands == "Feed Army"){
         Person.silentMode = true;
         personList[i].nation.feedArmy();
