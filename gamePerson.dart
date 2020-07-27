@@ -118,8 +118,8 @@ class _MyAppState extends State<MyCustomApp> {
       margin: EdgeInsets.all(5),
       child: FlatButton(
         child: Text('Proceed'),
-        color: Colors.yellow,
-        textColor: Colors.blue,
+        color: Colors.lightBlueAccent,
+        textColor: Colors.black,
         onPressed:(){
           numberOfPlayers = number;
           Navigator.push(
@@ -386,11 +386,15 @@ class _GamePlayScreenState extends State<GamePlayScreen>{
   
   void loadData(){
       _dropdownMenuItems = [];
-      _dropdownMenuItems = playerList.map((val) => new DropdownMenuItem<String>(
-        child: new Text(val),
-        value: val,
-      )).toList();
+      if(playerList.length != 0){
+        _dropdownMenuItems = playerList.map((val) => new DropdownMenuItem<String>(
+          child: new Text(val),
+          value: val,
+        )).toList();
       _selectedPlayer = _dropdownMenuItems[0].value;
+      }
+
+      
   }
 
 
@@ -402,28 +406,31 @@ class _GamePlayScreenState extends State<GamePlayScreen>{
       appBar: AppBar(
         title: Text("GamePerson"),
       ),
-      body: Column(
-        children:[
-          Text("Player $playerTurn (${personList[playerTurn-1].name}): What would you like to do?"),
-          buttonRow(),
-          Text(status),
-          Visibility(
-            visible: isVisible == true,
-            child: DropdownButton(
-                    value: _selectedPlayer,
-                    items: _dropdownMenuItems,
-                    onChanged: onChangeDropdownItem,
+      body: SingleChildScrollView(
+        child: Column(
+          //padding: const EdgeInsets.all(20.0),
+          children: [
+            Text("Player $playerTurn (${personList[playerTurn-1].name}): What would you like to do?"),
+            buttonRow(),
+            Text(status),
+            Visibility(
+              visible: isVisible == true,
+              child: DropdownButton(
+                      value: _selectedPlayer,
+                      items: _dropdownMenuItems,
+                      onChanged: onChangeDropdownItem,
+              ),
             ),
-          ),
-          Visibility(
-            visible: isVisible == true,
-            child: confirmButton(),
-          ),
-          Visibility(
-            visible: gameOver == true,
-            child: restartButton(context),
-          ),
-        ],
+            Visibility(
+              visible: isVisible == true,
+              child: confirmButton(),
+            ),
+            Visibility(
+              visible: gameOver == true,
+              child: restartButton(context),
+            ),
+          ],
+        )
       ),
     );
 
@@ -445,10 +452,10 @@ class _GamePlayScreenState extends State<GamePlayScreen>{
 
   Widget attackButton() {
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.all(10),
       child: FlatButton(
         child: Text('Attack'),
-        color: Colors.blue,
+        color: Colors.purple,
         textColor: Colors.black,
         onPressed: (){
           setState(() {
@@ -457,15 +464,21 @@ class _GamePlayScreenState extends State<GamePlayScreen>{
               status = "GAME OVER. Return to beginning.";
               return;
             }
-            if (personList[playerTurn-1].nation.armyList.length == 0 || personList[playerTurn-1].health <= 0){
-              status = "Player $playerTurn (${personList[playerTurn-1].name}) is dead. Turn is skipped.";
-              playerTurn++;
-              return;
-            }
-            if (numberOfPlayers > 2){ 
-              pressed = true;
-              status = "";
-              toggleVisbility(); 
+            if(numberOfPlayers>2){
+              if (personList[playerTurn-1].nation.armyList.length == 0 || personList[playerTurn-1].health <= 0){
+                status = "Player $playerTurn (${personList[playerTurn-1].name}) is dead. Turn is skipped.";
+                pressed = false;
+                playerTurn++;
+                return;
+              }
+              else{
+                pressed = true;
+                playerList.remove(personList[playerTurn-1].name);
+                loadData();
+                status = "";
+                toggleVisbility();
+                playerList.add((personList[playerTurn-1].name)); 
+              }
             }
             else{//there are 2 players
               if (gameOver == true){
@@ -485,13 +498,19 @@ class _GamePlayScreenState extends State<GamePlayScreen>{
               if(personList[0].nation.armyList.length == 0){
                 status += ("\n" + personList[1].nation.leader.name + "'s army is victorious!!");
                 gameOver = true;
+           
               }
               if(personList[1].nation.armyList.length == 0){
                 status += ("\n" + personList[0].nation.leader.name + "'s army is victorious!!");
                 gameOver = true;
+              
+              }
+              if(personList[0].nation.armyList.length == 0 && personList[1].nation.armyList.length == 0){
+                status += ("\n" + "Everyone is dead!");
+                gameOver = true;
+            
               }
               
-
               playerTurn++;
               if (playerTurn > personList.length)playerTurn = 1;
             }
@@ -509,24 +528,31 @@ class _GamePlayScreenState extends State<GamePlayScreen>{
 
   Widget eatButton() {
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.all(10),
       child: FlatButton(
         child: Text('Eat'),
         color: Colors.purple,
         textColor: Colors.black,
         onPressed: (){
           setState(() {
-       
+            loadData();
+            if(isVisible == true){
+              toggleVisbility();
+              pressed = false;
+            }
             if (gameOver == true){
               status = "GAME OVER. Return to beginning.";
               return;
             }
-            if (personList[playerTurn-1].nation.armyList.length == 0 || personList[playerTurn-1].health <= 0){
-        
-              status = "Player $playerTurn (${personList[playerTurn-1].name}) is dead. Turn is skipped.";
-              playerTurn++;
-              return;
+            if(numberOfPlayers > 2){
+              if (personList[playerTurn-1].nation.armyList.length == 0 || personList[playerTurn-1].health <= 0){
+          
+                status = "Player $playerTurn (${personList[playerTurn-1].name}) is dead. Turn is skipped.";
+                playerTurn++;
+                return;
+              }
             }
+              
             status = "";
             personList[playerTurn-1].nation.feedArmy();
             status += personList[playerTurn-1].nation.nationInfo();
@@ -541,24 +567,32 @@ class _GamePlayScreenState extends State<GamePlayScreen>{
 
   Widget passButton() {
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.all(10),
       child: FlatButton(
         child: Text('Pass'),
         color: Colors.purple,
         textColor: Colors.black,
         onPressed: (){
+          loadData();
+          if(isVisible == true){
+            toggleVisbility();
+            pressed = false;
+          }
           if (gameOver == true){
             status = "GAME OVER. Return to beginning.";
             return;
           }
-          if (personList[playerTurn-1].nation.armyList.length == 0 || personList[playerTurn-1].health <= 0){
-            setState(() {
-              status = "Player $playerTurn (${personList[playerTurn-1].name}) is dead. Turn is skipped.";
-              playerTurn++;
-              
-            });
-            return;
+          if(numberOfPlayers>2){
+            if (personList[playerTurn-1].nation.armyList.length == 0 || personList[playerTurn-1].health <= 0){
+              setState(() {
+                status = "Player $playerTurn (${personList[playerTurn-1].name}) is dead. Turn is skipped.";
+                playerTurn++;
+                
+              });
+              return;
+            }
           }
+
          setState(() {
             status = "";
             status += "Player $playerTurn passed.";
@@ -584,30 +618,49 @@ class _GamePlayScreenState extends State<GamePlayScreen>{
               if(numberOfPlayers>2)toggleVisbility();
               return;
             }
+            //turns dropdown off
             if(numberOfPlayers>2)toggleVisbility();
-              status = "";
-              //Finds the index of the player that you want to attack
-              int index = -1;
-              for (Person p in personList){
-                index++;
-                if (p.name == _selectedPlayer){
-                  break;
-                }
+            pressed = false;
+            status = "";
+            //Finds the index of the player that you want to attack
+            int index = -1 ;
+            for (Person p in personList){
+              index++;
+              if (p.name == _selectedPlayer){
+                break;
               }
+            }
             
 
             personList[playerTurn-1].nation.nationAttack(personList[index].nation, 10);
-            personList.forEach((p) => status += p.nation.armyHealthString() + "\n");
+            //personList.forEach((p) => status += p.nation.armyHealthString() + "\n")
+            List <Person> toRemove = [];
+            if (personList[playerTurn-1].health <= 0){
+                 //marks army members for removal
+                  personList[playerTurn-1].nation.armyList.forEach((p) => toRemove.add(p));
+                  //adds them to attacker's armyList
+                  personList[index].nation.armyList.addAll(toRemove);
+                  //removes army members from current player
+                  personList[playerTurn-1].nation.armyList.removeWhere((p) => toRemove.contains(p));
+                
+            }
+            if(personList[index].health <= 0){
+                 //marks army members for removal
+                  personList[index].nation.armyList.forEach((p) => toRemove.add(p));
+                  //adds them to current player's armyList
+                  personList[playerTurn-1].nation.armyList.addAll(toRemove);
+                  //removes army members from attacker
+                  personList[index].nation.armyList.removeWhere((p) => toRemove.contains(p));
+            }
             
             int countOfAlivePlayers = 0;
             int indexOfWinner = 0;
-         
-         
+
+        
             for(int i = 0; i < personList.length; i++){
      
               if (personList[i].nation.armyList.length != 0 && personList[i].health > 0){
-                //if there is a alive player, add it to count
-                
+                //if there is a alive player, add it to countOfAlivePlayers
                 countOfAlivePlayers++; 
                 indexOfWinner = i;
                 
@@ -618,6 +671,11 @@ class _GamePlayScreenState extends State<GamePlayScreen>{
                 loadData();
               }
             }
+
+            status += "\n";
+            status += "\n";
+            personList.forEach((p) => status += p.nation.armyHealthString() + "\n");            
+            
             if (countOfAlivePlayers == 1){
               status+= "\n${personList[indexOfWinner].name} is the winner!";
               gameOver = true;
@@ -628,8 +686,9 @@ class _GamePlayScreenState extends State<GamePlayScreen>{
               gameOver = true;
               return;
             }
+            
 
-            pressed = false;
+            loadData();
             playerTurn++;
             if (playerTurn > personList.length)playerTurn = 1;
           });
@@ -643,7 +702,7 @@ class _GamePlayScreenState extends State<GamePlayScreen>{
       margin: EdgeInsets.all(20),
       child: FlatButton(
         child: Text('RESTART'),
-        color: Colors.purple,
+        color: Colors.blueAccent,
         textColor: Colors.black,
         onPressed: (){
           Navigator.push(
@@ -1103,8 +1162,8 @@ class Nation {
     armyHealth += "Size of " + this.leader.name + "'s army: " + 
     this.armyList.length.toString();
     armyHealth += "\n";
-    armyHealth += this.leader.name + "'s health: ${this.leader.health}";
-    armyHealth += "\n";
+    //armyHealth += this.leader.name + "'s health: ${this.leader.health}";
+    //armyHealth += "\n";
     this.armyList.forEach((v) => (armyHealth+= v.name + ": " + v.health.toString() + "\n"));
     
     int nationHealth = 0;
